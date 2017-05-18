@@ -93,7 +93,7 @@ public class DefaultCompositeChannelUnitTest {
         assertEquals("path.left.event_number_1.london", child1_1_1.path());
         assertEquals("path.left.beta.leeds", child1_2_2.path());
         assertEquals("path.not&left.delta.birmingham_insider_polish", child2_2_1.path());
-        assertEquals("path.not&left.delta.model", child2_2_2.path());
+        assertEquals("path.not&left.delta.cardiff", child2_2_2.path());
     }
 
     @Test
