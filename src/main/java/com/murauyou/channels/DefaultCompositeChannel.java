@@ -26,6 +26,9 @@ public class DefaultCompositeChannel implements CompositeChannel {
 
     protected final ConcurrentHashMap<String, CompositeChannel> children = new ConcurrentHashMap<>();
 
+    protected final SubscriptionsBroadcastStrategy broadcastStrategy = new SequentialBroadcastStrategy();
+
+
     public DefaultCompositeChannel(String name) {
         this.name = name;
         cachedPath = normalizePath(name);
@@ -77,7 +80,7 @@ public class DefaultCompositeChannel implements CompositeChannel {
     @Override
     public void publish(Object eventMsg) {
         // Publishing event on the current channel
-        subscriptions.forEach(subscriber -> subscriber.onTrigger(eventMsg));
+        broadcastStrategy.broadcast(subscriptions, eventMsg);
 
         // NOT publishing event on children channels
         // children.values().stream().forEach(channel -> channel.publish(eventMsg));
