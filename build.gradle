@@ -1,1 +1,14 @@
+apply from: 'versions.gradle'
 apply plugin: 'java'
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+dependencies {
+    testCompile "junit:junit:${versions['junit']}",
+            "org.mockito:mockito-core:${versions['mockito']}"
+            "org.powermock:powermock-api-mockito:${versions['powermock-mockito']}"
+
+}

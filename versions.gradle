@@ -1,0 +1,7 @@
+ext {
+    versions = [
+            'junit': '4.12',
+            'mockito': '1.9.5',
+            'powermock-mockito': '1.5.4',
+    ]
+}
