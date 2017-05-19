@@ -10,7 +10,7 @@ import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 
-public class DefaultCompositeChannelUnitTest {
+public class ChildrenListeningCompositeChannelUnitTest {
 
     /**
      * Subscriber that should fail the Unit test as should not have ben triggered
@@ -46,7 +46,7 @@ public class DefaultCompositeChannelUnitTest {
      */
     @Before
     public void setupChildrenByImplicitAdding() {
-        parent = new DefaultCompositeChannel("path");
+        parent = new ChildrenListeningCompositeChannel("path");
 
         child1 = parent.get("left");
         child2 = parent.get("right");
@@ -71,7 +71,7 @@ public class DefaultCompositeChannelUnitTest {
      */
     @Test
     public void testPathNomalization() {
-        CompositeChannel parent = new DefaultCompositeChannel("path");
+        CompositeChannel parent = new ChildrenListeningCompositeChannel("path");
 
         CompositeChannel child1 = parent.get("left");
         CompositeChannel child2 = parent.get("not&left");
@@ -111,7 +111,8 @@ public class DefaultCompositeChannelUnitTest {
     public void testTreeLevel2WithImplicitChildAdding() {
         setupChildrenByImplicitAdding();
 
-        parent.subscribe(FAILING_SUBSCRIBER);
+        Subscriber parentSubscriber = mock(Subscriber.class);
+        parent.subscribe(parentSubscriber);
 
         Subscriber child2Subscriber = mock(Subscriber.class);
         child1.subscribe(FAILING_SUBSCRIBER); // should not be triggered
@@ -133,6 +134,7 @@ public class DefaultCompositeChannelUnitTest {
 
         child2.publish("message");
 
+        Mockito.verify(parentSubscriber, times(1)).onTrigger("message");
         Mockito.verify(child2Subscriber, times(1)).onTrigger("message");
     }
 
@@ -143,13 +145,16 @@ public class DefaultCompositeChannelUnitTest {
     public void testTreeLevel4WithImplicitChildAdding() {
         setupChildrenByImplicitAdding();
 
-        parent.subscribe(FAILING_SUBSCRIBER);
+        Subscriber parentSubscriber = mock(Subscriber.class);
+        parent.subscribe(parentSubscriber);
 
-        child1.subscribe(FAILING_SUBSCRIBER);
+        Subscriber child1Subscriber = mock(Subscriber.class);
+        child1.subscribe(child1Subscriber);
         child2.subscribe(FAILING_SUBSCRIBER); // should not be triggered
 
+        Subscriber child1_2Subscriber = mock(Subscriber.class);
         child1_1.subscribe(FAILING_SUBSCRIBER); // should not be triggered
-        child1_2.subscribe(FAILING_SUBSCRIBER);
+        child1_2.subscribe(child1_2Subscriber);
         child2_1.subscribe(FAILING_SUBSCRIBER); // should not be triggered
         child2_2.subscribe(FAILING_SUBSCRIBER); // should not be triggered
 
@@ -165,6 +170,9 @@ public class DefaultCompositeChannelUnitTest {
 
         child1_2_2.publish("message");
 
+        Mockito.verify(parentSubscriber, times(1)).onTrigger("message");
+        Mockito.verify(child1Subscriber, times(1)).onTrigger("message");
+        Mockito.verify(child1_2Subscriber, times(1)).onTrigger("message");
         Mockito.verify(child1_2_2Subscriber, times(1)).onTrigger("message");
     }
 
